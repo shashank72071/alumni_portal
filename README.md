@@ -25,6 +25,6 @@ Command :
 $ python web2py.py -S alumni_networks -M -R applications/alumni_networks/test/test.py
 
 
-Github Link:
+Github Link: https://github.com/shashank72071/alumni_portal.git
 
  
