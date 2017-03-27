@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<h1>
+    Create an Event 
+</h1>
+<hr>
+
+{{if 'message' in globals():}}
+<h2>{{=message}}</h2>
+{{elif 'content' in globals():}}
+{{=content}}
+{{else:}}
+{{=BEAUTIFY(response._vars)}}
+{{pass}}

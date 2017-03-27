@@ -1,0 +1,19 @@
+{{extend 'layout.html'}}
+
+<h1>
+    Ongoing Events :
+</h1>
+<hr>
+
+<html>
+	<body>
+		{{ for row in l:}}
+		<h1> {{=row.event_name}}</h1>
+		<p>  {{=row.description}}</p>
+		<h5> Date : {{ =row.event_date}}</h5>
+		<h5> Venue : {{ =row.venue }} </h5>
+		<a href="{{=URL('eventapply', args=row.id)}}" >  register now </a>
+		{{pass}}		
+
+	</body>
+</html>

@@ -1,0 +1,193 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+# -------------------------------------------------------------------------
+# This is a sample controller
+# - index is the default action of any application
+# - user is required for authentication and authorization
+# - download is for downloading files uploaded in the db (does streaming)
+# -------------------------------------------------------------------------
+
+
+def index():
+    rows=db(db.newsroom).select(orderby=db.newsroom.title.upper())
+    return locals()
+
+def shownews():
+    news=db.newsroom(request.args(0,cast=int))
+    db.news_comment.newsroom.default=news.id
+    db.news_comment.newsroom.writable=False
+    db.news_comment.newsroom.readable=False
+    if auth.is_logged_in():
+        form=SQLFORM(db.news_comment).process()
+    comments=db(db.news_comment.newsroom==news.id).select()
+    return locals()
+
+def createnews():
+    return locals()
+
+def members():
+    mems=db(db.auth_user).select()
+    return locals()
+
+def search():
+    val=request.vars.search
+    val=val.lower()
+    stype=request.vars.searchby
+    if stype == "job":
+        rows=db(db.auth_user.job.contains(val.lower())).select()
+    elif stype == "location":
+        rows=db(db.auth_user.current_location.contains(val)).select()
+    elif stype == "name":
+        rows=db(db.auth_user.first_name.contains(val)|db.auth_user.last_name.contains(val)).select()
+    elif stype == "bachof":
+        rows=db(db.auth_user.year_of_joining.year.contains(val)).select()
+    elif stype == "program":
+        rows=db(db.auth_user.program.contains(val)).select()
+    else:
+        rows=None
+    return locals()
+
+
+
+@auth.requires_login()
+def job():
+    email_id = db(db.auth_user.id == auth.user.id).select(db.auth_user.email)
+    email_id = email_id[0].email
+    form = SQLFORM.factory(
+        Field('Company_Name'),
+        Field('Description'),
+        Field('LastDate', 'datetime'),
+        Field('em', default = email_id))
+    #form.vars.email.default = email_id
+
+    if form.accepts(request.vars, session):
+        db.job.insert(Company_Name = form.vars.Company_Name, Description = form.vars.Description, LastDate = form.vars.LastDate, em=email_id)
+        #db.basic.insert(name = form.vars.name, age = form.vars.age)
+        redirect('jobdisplay')
+    return dict(form=form)
+
+
+@auth.requires_login()
+def jobdisplay():
+    l = db(db.job).select()
+    return dict(l = l)
+
+
+@auth.requires_login()
+def jobapply():
+    email_id = db(db.auth_user.id == auth.user.id).select(db.auth_user.email)
+    email_id = email_id[0].email
+    post = db.job(request.args(0))
+
+    form = SQLFORM.factory(
+        Field('rec_email', default = post.em),
+        Field('applier_name'),
+        Field('applier_email', default = email_id),
+        Field('applied_com', default = post.Company_Name),
+        Field('description', default = post.Description))
+
+    #form.vars.email.default = email_id
+
+    if form.accepts(request.vars, session):
+        db.applied_job.insert(rec_email = post.em, applier_name = form.vars.applier_name, applier_email = email_id, applied_com=post.Company_Name, description=post.Description)
+        #db.basic.insert(name = form.vars.name, age = form.vars.age)
+        response.flash = T("Applied")
+    return dict(form=form)
+
+@auth.requires_login()
+def eventlist():
+    email_id = db(db.auth_user.id == auth.user.id).select(db.auth_user.email)
+    email_id = email_id[0].email
+    form = SQLFORM.factory(
+        Field('event_name'),
+        Field('description'),
+        Field('event_date', 'date'),
+        Field('venue'))
+    #form.vars.email.default = email_id
+
+    if form.accepts(request.vars, session):
+        db.eventlist.insert(event_name = form.vars.event_name, description = form.vars.description, event_date = form.vars.event_date, venue = form.vars.venue)
+        #db.basic.insert(name = form.vars.name, age = form.vars.age)
+        redirect('eventdisplay')
+    return dict(form=form)
+
+@auth.requires_login()
+def eventdisplay():
+    l = db(db.eventlist).select()
+    return dict(l = l)
+    
+def eventapply():
+    email_id = db(db.auth_user.id == auth.user.id).select(db.auth_user.email)
+    email_id = email_id[0].email
+    post = db.eventlist(request.args(0))
+
+    form = SQLFORM.factory(
+        Field('event_name', default = post.event_name),
+        Field('description', default = post.description),
+        Field('applier_email', default = email_id),
+        Field('applier_name'))
+
+    #form.vars.email.default = email_id
+
+    if form.accepts(request.vars, session):
+        db.applied_event.insert(event_name = post.event_name, description =post.description, applier_email=email_id, applier_name=form.vars.applier_name)
+        response.flash = T("Applied")
+    return dict(form=form)
+
+
+@auth.requires_login()
+def e_request():
+    email_id = db(db.auth_user.id == auth.user.id).select(db.auth_user.email)
+    email_id = email_id[0].email
+    form = SQLFORM.factory(
+        Field('request_type'),
+        Field('description'),
+        Field('request_date', 'datetime'),
+        Field('applier_email', default = email_id),
+        Field('applier_name'))
+    #form.vars.email.default = email_id
+
+    if form.accepts(request.vars, session):
+        db.e_request.insert(request_type = form.vars.request_type, description = form.vars.description, request_date = form.vars.request_date, applier_email = email_id, applier_name = form.vars.applier_name)
+        #db.basic.insert(name = form.vars.name, age = form.vars.age)
+        response.flash = T("Applied")
+    return dict(form=form)
+
+
+def user():
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    http://..../[app]/default/user/bulk_register
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
+    """
+    return dict(form=auth())
+
+
+@cache.action()
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request, db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()

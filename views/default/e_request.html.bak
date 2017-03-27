@@ -1,0 +1,17 @@
+{{extend 'layout.html'}}
+
+<h1>
+    Alumni Assist 
+</h1>
+<hr>
+<h2>
+    Generate e-request
+</h2>
+
+{{if 'message' in globals():}}
+<h2>{{=message}}</h2>
+{{elif 'content' in globals():}}
+{{=content}}
+{{else:}}
+{{=BEAUTIFY(response._vars)}}
+{{pass}}

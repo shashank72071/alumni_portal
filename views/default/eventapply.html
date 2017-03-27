@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<h1>
+    Register Event
+</h1>
+<hr>
+{{if 'message' in globals():}}
+<h2>{{=message}}</h2>
+<p class="lead">{{=T('How did you get here?')}}</p>
+{{elif 'content' in globals():}}
+{{=content}}
+{{else:}}
+{{=BEAUTIFY(response._vars)}}
+{{pass}}

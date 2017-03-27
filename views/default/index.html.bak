@@ -1,0 +1,44 @@
+{{extend 'layout.html'}}
+
+{{from gluon.tools import prettydate}}
+
+<style type="text/css">
+.bgimg {
+    background-image: url("{{=URL('static','images/myimg/alumni.jpg')}}");
+}
+</style>
+
+
+{{block header}}
+    <header class="bgimg">
+      <div class="jumbotron text-center">
+        {{if response.title:}}
+        <h1>{{=response.title}}
+          <small>{{=response.subtitle or ''}}</small></h1>
+        {{pass}}
+      </div>
+    </header>
+{{end}}
+
+
+<div class="container">
+    <div class="item-left">
+        <img src="{{=URL('static','images/myimg/IIIT-Hyderbad.jpg')}}"/>
+    </div>
+    <div class="item-right">
+        <h2>
+            NEWSROOM
+        </h2>
+        {{if not comments:}}
+            <i>No news yet</i>
+        {{pass}}
+         <table class="table">
+        {{for row in rows:}}
+    <tr>
+        <td><a href="{{=URL('shownews',args=row.id)}}">{{=row.title}}</a></td>
+        <td>{{=prettydate(row.created_on)}}</td>
+    </tr>
+    {{pass}}
+</table>
+    </div>
+</div>

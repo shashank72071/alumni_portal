@@ -1,0 +1,30 @@
+{{extend 'layout.html'}}
+{{from gluon.tools import prettydate}}
+
+<h1>
+    List of Jobs
+</h1>
+<html>
+	<body>
+		<table class="table">
+            <tr>
+		<th> Company Name </th>
+		<th> Description </th>
+		<th> Last Date </th>
+		<th> Contact Mail </th>
+		<th> Apply </th>
+            </tr>
+
+		{{ for row in l:}}
+		<tr> 
+		<td>{{=row.Company_Name}} </td>
+		<td>{{=row.Description}} </td>
+		<td>{{=row.LastDate}}</td>
+		<td>{{=row.em}}</td>
+		<td><a href="{{=URL('jobapply', args=row.id)}}" >  apply </a><td>
+		</tr>
+		{{ pass}}
+		</table>
+
+	</body>
+</html>

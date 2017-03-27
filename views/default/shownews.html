@@ -1,0 +1,28 @@
+{{extend 'layout.html'}}
+
+{{from gluon.tools import prettydate}}
+
+<h2>{{=news.title}}</h2>
+
+<i>Posted on : {{=news.created_on}} by {{=news.created_by.first_name}} {{=news.created_by.last_name}} </i>
+
+<hr>
+
+<h3>
+    {{=XML(news.body,sanitize=True)}}
+</h3>
+
+<hr>
+<h4 style="color:blue">Comments</h4>
+
+{{if not comments:}}
+<i>No comments yet</i>
+{{pass}}
+{{for comment in comments:}}
+<div class="well">
+    <b>{{=comment.created_by.first_name}} {{=comment.created_by.last_name}} <i></i>[ {{=prettydate(comment.created_on)}}]</i> says : </b> {{=comment.post_comment}}
+</div>
+{{pass}}
+{{if auth.is_logged_in():}}
+{{=form}}
+{{pass}}

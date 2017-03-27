@@ -1,0 +1,52 @@
+{{extend 'layout.html'}}
+<h1>
+Search Result for {{=stype}} "{{=val}}"
+</h1>
+
+<div>
+    <form action={{=URL('search')}} method="post">
+      Search for : <input type="text" name="search">&nbsp;&nbsp;&nbsp;
+        <select name="searchby">
+              <option value="name">Name</option>
+              <option value="batchof">Batch of</option>
+              <option value="job">Job</option>
+              <option value="location">Current Location</option>
+               <option value="program">Program</option>
+        </select>&nbsp;&nbsp;&nbsp;
+        <input type="submit"> </intput>
+        <br><br>
+    </form>
+</div>
+
+
+<table class="table">
+    <tr>
+    <th>Display picture</th>
+    <th>Name</th>
+    <th>Program</th>
+    <th>Batch of </th>
+    <th>Registration Type</th>
+    <th>Current Location</th>
+    <th>Contact</th>
+    </tr>
+{{if not rows:}}
+    <h2>Not result found ! </h2>
+{{else:}}
+{{for row in rows:}}
+    <tr>
+        {{if not row.display_picture:}}
+            <td><img src="{{=URL('static','images/dp/dflt.jpg')}}" height="80" width="80"/></td>
+        {{else:}}
+            <td><img src="{{=URL('static','images/dp/%s' %(row.display_picture))}}" height="80" width="80"/></td>
+        {{pass}}
+
+        <td>{{=row.first_name}} {{=row.last_name}}</td>
+        <td>{{=row.program[0]}}</td>
+        <td>{{=row.year_of_joining.year}}</td>
+        <td>{{=row.registration_type[0]}}</td>
+        <td>{{=row.current_location}}</td>
+        <td>{{=row.phone_no}}</td>
+    </tr>
+{{pass}}
+{{pass}}
+</table>

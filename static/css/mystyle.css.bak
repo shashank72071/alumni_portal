@@ -1,0 +1,19 @@
+.container {
+        overflow:hidden;
+	text-align: left;
+	margin: 0px auto;
+	padding: 0px;
+	border:0;
+	width: 90%;
+}
+.item-left {
+	float: left;
+	width: 40%;
+	background-color:white;
+}
+.item-right { 
+	margin: 0;
+	float: right;
+	width: 45%;
+	background-color:white;
+}
